@@ -238,6 +238,7 @@ public abstract class Player
 
         if (accuratesonaron)
         {
+            const int radius = 200;
             accuratesonaron = false;
             EntitiesInAccurateSonar.Clear();
             Energy -= 10 * dt;
@@ -248,27 +249,27 @@ public abstract class Player
                     continue;
                 dx = player.Location.X - this.Location.X;
                 dy = player.Location.Y - this.Location.Y;
-                if (dx * dx + dy * dy < 200 * 200) // 150 pixels
-                {
+                if (dx * dx + dy * dy < radius * radius)
                     EntitiesInAccurateSonar.Add(player.Location);
-                }
             }
             foreach (var food in allfoods)
             {
                 dx = food.X - this.Location.X;
                 dy = food.Y - this.Location.Y;
-                if (dx * dx + dy * dy < 200 * 200) // 150 pixels
-                {
+                if (dx * dx + dy * dy < radius * radius)
                     EntitiesInAccurateSonar.Add(food);
-                }
             }
             
-            g.DrawEllipse(Pens.Blue, this.Location.X - 400 / 2,
-                 this.Location.Y - 400 / 2, 400, 400);
+            g.DrawEllipse(Pens.Blue,
+                this.Location.X - radius,
+                this.Location.Y - radius, 
+                2 * radius, 2 * radius
+            );
         }
         
         if (strongsonaron)
         {
+            const int radius = 400;
             strongsonaron = false;
             Energy -= 10 * dt;
             EntitiesInStrongSonar = 0;
@@ -276,25 +277,25 @@ public abstract class Player
             {
                 if (player == this)
                     continue;
+                
                 dx = player.Location.X - this.Location.X;
                 dy = player.Location.Y - this.Location.Y;
-                if (dx * dx + dy * dy < 300*300) // 300 pixels
-                {
+                if (dx * dx + dy * dy < radius * radius)
                     EntitiesInStrongSonar++;
-                }
             }
             foreach (var food in allfoods)
             {
                 dx = food.X - this.Location.X;
                 dy = food.Y - this.Location.Y;
-                if (dx * dx + dy * dy < 300*300) // 300 pixels
-                {
+                if (dx * dx + dy * dy < radius * radius)
                     EntitiesInStrongSonar++;
-                }
             }
             
-            g.DrawEllipse(Pens.DarkBlue, this.Location.X - 600 / 2,
-                 this.Location.Y - 600 / 2, 600, 600);
+            g.DrawEllipse(Pens.DarkBlue,
+                this.Location.X - radius,
+                this.Location.Y - radius,
+                2 * radius, 2 * radius
+            );
         }
 
         if (infraredsensoron)
@@ -313,6 +314,7 @@ public abstract class Player
             {
                 if (player == this)
                     continue;
+                
                 var r = player.Location;
                 var dist = (float)Math.Sqrt((r.X - this.Location.X) * (r.X - this.Location.X) +
                     (r.Y - this.Location.Y) * (r.Y - this.Location.Y));
@@ -379,7 +381,7 @@ public abstract class Player
                 allfoods.RemoveAt(f);
                 f--;
                 this.Points++;
-                this.LifeRegeneration += .5f;
+                this.Life += 10;
                 this.EnergyRegeneration += .5f;
             }
         }

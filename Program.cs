@@ -2,6 +2,8 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.Security.Cryptography;
+using System.Reflection;
 
 Application.SetHighDpiMode(HighDpiMode.SystemAware);
 Application.EnableVisualStyles();
@@ -41,14 +43,39 @@ var tm = new Timer
 
 form.Load += delegate
 {
+    var mode = args.Length < 1 ? "test" : args[0];
     foreach (var pl in typeof(Player).Assembly.DefinedTypes)
     {
-        if (pl.BaseType == typeof(Player))
-        {
-            players.Add((Player)pl.GetConstructors()[0].Invoke(new object [] {
-                new PointF(rand.Next(form.Width), rand.Next(form.Height))
-            }));
-        }
+        if (pl.BaseType != typeof(Player))
+            continue;
+        
+        var isTest = pl.GetCustomAttribute<TestAttribute>() is not null;
+        if (mode == "test" && !isTest)
+            continue;
+        
+        var constructors = pl.GetConstructors();
+        if (constructors.Length == 0)
+            continue;
+        
+        var constructor = constructors[0];
+        var parameters = constructor.GetParameters();
+        if (parameters.Length != 1)
+            continue;
+        
+        var parameter = parameters[0];
+        if (parameter.ParameterType != typeof(PointF))
+            continue;
+        
+        var rndPoint = new PointF(
+            rand.Next(form.Width),
+            rand.Next(form.Height)
+        );
+        
+        var player = (Player)constructor.Invoke(new object [] { rndPoint });
+        if (player is null)
+            continue;
+        
+        players.Add(player);
     }
 
     bmp = new Bitmap(pb.Width, pb.Height);
