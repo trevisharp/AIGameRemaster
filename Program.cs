@@ -13,25 +13,31 @@ List<Bomb> bombs = new List<Bomb>();
 int frame = 0;
 Random rand = new Random(DateTime.Now.Millisecond);
 
-var form = new Form();
-form.WindowState = FormWindowState.Maximized;
-form.KeyPreview = true;
-form.FormBorderStyle = FormBorderStyle.None;
+var form = new Form
+{
+    WindowState = FormWindowState.Maximized,
+    KeyPreview = true,
+    FormBorderStyle = FormBorderStyle.None
+};
 form.KeyDown += (o, e) =>
 {
     if (e.KeyCode == Keys.Escape)
         Application.Exit();
 };
 
-PictureBox pb = new PictureBox();
-pb.Dock = DockStyle.Fill;
+var pb = new PictureBox
+{
+    Dock = DockStyle.Fill
+};
 form.Controls.Add(pb);
 
 Bitmap bmp = null;
 Graphics g = null;
 
-Timer tm = new Timer();
-tm.Interval = 25;
+var tm = new Timer
+{
+    Interval = 25
+};
 
 form.Load += delegate
 {
@@ -44,7 +50,6 @@ form.Load += delegate
             }));
         }
     }
-
 
     bmp = new Bitmap(pb.Width, pb.Height);
     g = Graphics.FromImage(bmp);
@@ -61,7 +66,7 @@ tm.Tick += delegate
     foreach (var player in players)
     {
         if (!player.IsBroked)
-            player.Loop(g, .025f, players, foods, bombs, frame);
+            player.Loop(g, .025f, players, foods, bombs);
     }
     
     if (foods.Count < 40)

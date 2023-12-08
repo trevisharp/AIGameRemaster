@@ -1,23 +1,23 @@
 using System;
-using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
+using System.Drawing;
+using System.Collections.Generic;
 
 public abstract class Player
 {
-    public Player(PointF location, Color primary, Color secundary, string name)
+    public Player(PointF location, Color primary, Color secondary, string name)
     {
         this.Location = location;
         this.primarycolor = primary;
-        this.secundarycolor = secundary;
+        this.secondarycolor = secondary;
         this.name = name;
     }
 
     private readonly Color primarycolor = Color.Blue;
-    private readonly Color secundarycolor = Color.Blue;
+    private readonly Color secondarycolor = Color.Blue;
     private readonly string name = "robo sem nome";
     public Color PrimaryColor => primarycolor;
-    public Color SecundaryColor => secundarycolor;
+    public Color SecondaryColor => secondarycolor;
     public string Name => name;
     public bool IsBroked { get; private set; } = false;
     public int Points { get; private set; } = 0;
@@ -46,32 +46,45 @@ public abstract class Player
     private bool turbo = false;
     private bool moving = false;
 
+    /// <summary>
+    /// O robo quebra e perde o jogo no fim do Frame
+    /// </summary>
     public void Broke()
-    {
-        this.IsBroked = true;
-    }
+        => this.IsBroked = true;
 
+    /// <summary>
+    /// Liga o Sonar Preciso no fim do Frame
+    /// Energia: 10 por segundo
+    /// </summary>
     public void AccurateSonar()
-    {
-        this.accuratesonaron = true;
-    }
-
+        => this.accuratesonaron = true;
+    
+    /// <summary>
+    /// Liga o Sonar Forte no fim do Frame
+    /// Energia: 10 por segundo
+    /// </summary>
     public void StrongSonar()
-    {
-        this.strongsonaron = true;
-    }
+        => this.strongsonaron = true;
 
+    /// <summary>
+    /// Liga o Sensor Infravermelho na direção de um ponto no fim do Frame
+    /// Energia: 10 por segundo
+    /// </summary>
     public void InfraRedSensor(PointF p)
     {
         this.infraredsensoron = true;
         this.infraredsensorpoint = p;
     }
 
+    /// <summary>
+    /// Liga o Sensor Infravermelho em uma direção específica no fim do Frame
+    /// </summary>
     public void InfraRedSensor(SizeF direction)
-    {
-        InfraRedSensor(this.Location + direction);
-    }
-
+        => InfraRedSensor(this.Location + direction);
+    
+    /// <summary>
+    /// Liga o Sensor Infravermelho em um angulo específico no fim do Frame
+    /// </summary>
     public void InfraRedSensor(float angle)
     {
         SizeF direction = new SizeF(
@@ -81,17 +94,28 @@ public abstract class Player
         InfraRedSensor(direction);
     }
 
+    /// <summary>
+    /// Atira na direção de um ponto no fim do Frame
+    /// Energia: 20 por segundo
+    /// </summary>
     public void Shoot(PointF p)
     {
         shooting = true;
         shootingpoint = p;
     }
 
+    /// <summary>
+    /// Atira em uma direção específica fim do Frame
+    /// Energia: 20 por segundo
+    /// Dano: 15 de dano
+    /// </summary>
     public void Shoot(SizeF direction)
-    {
-        InfraRedSensor(this.Location + direction);
-    }
+        => Shoot(this.Location + direction);
 
+    /// <summary>
+    /// Começa a se mover na direção de um ponto no fim do frame
+    /// Energia: 2 por segundo
+    /// </summary>
     public void StartMove(PointF p)
     {
         p = new PointF(p.X - Location.X, p.Y - Location.Y);
@@ -102,11 +126,17 @@ public abstract class Player
         moving = true;
     }
 
+    /// <summary>
+    /// Começa a se mover em uma direção específica no fim do frame
+    /// Energia: 2 por segundo
+    /// </summary>
     public void StartMove(SizeF direction)
-    {
-        StartMove(this.Location + direction);
-    }
+        => StartMove(this.Location + direction);
     
+    /// <summary>
+    /// Começa a se mover em um ângulo específico no fim do frame
+    /// Energia: 2 por segundo
+    /// </summary>
     public void StartMove(float angle)
     {
         SizeF direction = new SizeF(
@@ -116,31 +146,39 @@ public abstract class Player
         StartMove(direction);
     }
 
+    /// <summary>
+    /// Liga Turbo aumentando a velocidade no fim do frame
+    /// Energia: 2 por segundo
+    /// </summary>
     public void StartTurbo()
-    {
-        turbo = true;
-    }
+        => turbo = true;
 
+    /// <summary>
+    /// Para Turbo no fim do frame
+    /// </summary>
     public void StopTurbo()
-    {
-        turbo = false;
-    }
+        => turbo = false;
 
+    /// <summary>
+    /// Para movimentação no fim do frame
+    /// </summary>
     public void StopMove()
     {
         Velocity = SizeF.Empty;
         moving = false;
     }
 
+    /// <summary>
+    /// Reseta e limpa dados do infravermelho
+    /// </summary>
     public void ResetInfraRed()
-    {
-        infrareset = true;
-    }
+        => infrareset = true;
 
+    /// <summary>
+    /// Reseta e limpa dados do Sonar
+    /// </summary>
     public void ResetSonar()
-    {
-        sonarreset = true;
-    }
+        => sonarreset = true;
 
     public void Draw(Graphics g)
     {
@@ -150,9 +188,9 @@ public abstract class Player
             4 * this.PrimaryColor.B / 10
         );
         Color darksc = Color.FromArgb(
-            4 * this.SecundaryColor.R / 10,
-            4 * this.SecundaryColor.G / 10,
-            4 * this.SecundaryColor.B / 10
+            4 * this.SecondaryColor.R / 10,
+            4 * this.SecondaryColor.G / 10,
+            4 * this.SecondaryColor.B / 10
         );
         g.FillEllipse(new SolidBrush(darkpc),
             this.Location.X - 20, this.Location.Y - 20,
@@ -163,7 +201,7 @@ public abstract class Player
         g.FillEllipse(new SolidBrush(darksc), 
             this.Location.X - 10, this.Location.Y - 10,
             20, 20);
-        g.FillPie(new SolidBrush(this.SecundaryColor), 
+        g.FillPie(new SolidBrush(this.SecondaryColor), 
             this.Location.X - 10, this.Location.Y - 10,
             20, 20, 0f, 360f * (float)Energy / 100);
         g.DrawEllipse(Pens.Black, 
@@ -184,9 +222,12 @@ public abstract class Player
         this.LastDamage = bomb;
     }
 
-    public void Loop(Graphics g, float dt, 
-        List<Player> allplayers, List<PointF> allfoods, 
-        List<Bomb> allbombs, int i)
+    public void Loop(
+        Graphics g, float dt, 
+        List<Player> allplayers,
+        List<PointF> allfoods, 
+        List<Bomb> allbombs
+    )
     {
         allplayers = allplayers
             .Where(p => !p.IsBroked)
