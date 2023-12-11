@@ -18,22 +18,21 @@ public class Lamina : Player
     int points = 0;
     bool flee = false;
     long fleeTime = 0;
+    int lifeTh = 80;
     PointF fleePoint = new PointF(0,0);
 
     protected override void loop()
     {
         frame++;
         StartTurbo();
-        if (Life < 80)
-            flee = true;
 
-        if(LastDamage is not null && Life < 70)
+        if(Life < 70)
         {
             flee = true;
             if (LastDamage.Value.X > Location.X)
-                fleePoint.X = LastDamage.Value.X + 600;
-            else 
                 fleePoint.X = LastDamage.Value.X - 600;
+            else 
+                fleePoint.X = LastDamage.Value.X + 600;
             if (LastDamage.Value.Y > Location.Y)
                 fleePoint.Y = LastDamage.Value.Y - 400;
             else 
@@ -56,7 +55,6 @@ public class Lamina : Player
             }
             if(Energy > 20)
             {
-                // flee = false;
                 StartTurbo();
             }
             else
@@ -76,7 +74,7 @@ public class Lamina : Player
         {
             food = null;
         }
-        if (Energy < 1)
+        if (Energy < 10)
         {
             StopMove();
             isloading = true;
@@ -89,9 +87,9 @@ public class Lamina : Player
                 isloading = false;
             else return;
         }
-        if (food == null && EnergyRegeneration < 5)
+        if (food == null && EnergyRegeneration < 7)
             InfraRedSensor(3.5f * i++);
-        else if (food != null && EnergyRegeneration < 5)
+        else if (food != null && EnergyRegeneration < 7)
         {
             float dx = food.Value.X - this.Location.X,
                   dy = food.Value.Y - this.Location.Y;
@@ -114,9 +112,9 @@ public class Lamina : Player
             enemy = null;
         }
 
-        if (enemy == null && EnergyRegeneration >= 5)
+        if (enemy == null && EnergyRegeneration >= 7)
             InfraRedSensor(5f * i++);
-        else if (enemy != null && EnergyRegeneration >= 5)
+        else if (enemy != null && EnergyRegeneration >= 7)
         {
             InfraRedSensor(enemy.Value);
             float dx = enemy.Value.X - this.Location.X,
