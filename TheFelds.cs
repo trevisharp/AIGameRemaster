@@ -1,3 +1,4 @@
+        // Screen.PrimaryScreen.Bounds.Width;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
@@ -10,14 +11,13 @@ public class FeldPlayer : Player
     public FeldPlayer(PointF location) :
         base(location, Color.Yellow, Color.Blue, "Feldzinho")
     { }
-    bool init = true;
     int position = 1;
     PointF go1 = new PointF(30, 30);
     PointF go2 = new PointF(30, 770);
     PointF go3 = new PointF(1250, 770);
     PointF go4 = new PointF(1250, 30);
     PointF? currentPosition = new PointF();
-
+    int count = 0;
     double? lastlife = null;
 
     private float distance(PointF? pointA, PointF? pointB)
@@ -27,30 +27,29 @@ public class FeldPlayer : Player
 
         return (deltaX * deltaX) + (deltaY * deltaY);
     }
-
-    double minLife = 75;
-    PointF? enemy = null;
-
     protected override void loop()
     {
-        // Screen.PrimaryScreen.Bounds.Width;
         currentPosition = this.Location;
 
+
         StartTurbo();
+
         if (lastlife != null && lastlife > Life)
         {
-            if (Life < minLife)
-            {
-                position++;
-                minLife = Life - 30;
-            }
+            Shoot(LastDamage.Value);
+            count++;
+        }
+        if (count == 2)
+        {
+            count = 0;
+            position++;
         }
 
         if (position == 1)
             StartMove(go4);
 
         if (distance(go4, currentPosition) <= 25)
-            StopMove();
+            {StopMove();}
 
         if (position == 2)
             StartMove(p: go3);
