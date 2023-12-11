@@ -16,15 +16,44 @@ public class FalusBot : Player
         frame++;
         if (Energy < 10 || frame % 10 == 0)
             return;
-
-        if (EnemiesInInfraRed.Count == 0)
+        
+        if (Energy <= 15 || Life <= 5)
         {
-            InfraRedSensor(5f * i++);
+            AccurateSonar();
+        }
+
+        if (EntitiesInAccurateSonar.Count > 0)
+        {
+            if (food == null)
+                InfraRedSensor(5f * i++);
+            else if (food != null)
+            {
+                food = FoodsInInfraRed[0];
+                float dx = food.Value.X - this.Location.X,
+                  dy = food.Value.Y - this.Location.Y;
+                if (dx*dx + dy*dy >= 300f*300f)
+                    StartMove(food.Value);
+                else
+                    StopMove();
+            }
+        }
+
+
+        if (EnemiesInInfraRed.Count > 0)
+        {
+            enemy = EnemiesInInfraRed[0];
         }
         else
         {
-            enemy = EnemiesInInfraRed[0];
-            while(enemy.HasValue)
+           enemy = null;
+        }
+
+        if (enemy == null && Energy > 10)
+            InfraRedSensor(5f * i++);
+        else if (enemy != null && Energy > 10)
+        {
+            InfraRedSensor(enemy.Value);
+            if (i++ % 5 == 0)
                 Shoot(enemy.Value);
         }
         

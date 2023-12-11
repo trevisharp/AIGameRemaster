@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 
+[Test]
 public class TreviPlayer : Player
 {
     public TreviPlayer(PointF location) : 
