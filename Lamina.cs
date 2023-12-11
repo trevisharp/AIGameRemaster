@@ -17,23 +17,23 @@ public class Lamina : Player
     int frame = 0;
     int points = 0;
     bool flee = false;
-    int fleeTime = 0;
+    long fleeTime = 0;
     PointF fleePoint = new PointF(0,0);
 
     protected override void loop()
     {
         frame++;
         StartTurbo();
-        if (Life < 50)
+        if (Life < 80)
             flee = true;
 
         if(LastDamage is not null && Life < 70)
         {
             flee = true;
             if (LastDamage.Value.X > Location.X)
-                fleePoint.X = LastDamage.Value.X + 250;
+                fleePoint.X = LastDamage.Value.X + 600;
             else 
-                fleePoint.X = LastDamage.Value.X - 250;
+                fleePoint.X = LastDamage.Value.X - 600;
             if (LastDamage.Value.Y > Location.Y)
                 fleePoint.Y = LastDamage.Value.Y - 400;
             else 
@@ -41,7 +41,7 @@ public class Lamina : Player
             fleeTime = 0;
         }
 
-        if(fleeTime > 3)
+        if(fleeTime >= 3)
         {
             flee = false;
             fleeTime = 0;
@@ -55,11 +55,15 @@ public class Lamina : Player
                 return;
             }
             if(Energy > 20)
+            {
+                flee = false;
                 StartTurbo();
+            }
             else
                 StopTurbo();
             fleeTime++;
             enemy = LastDamage;
+            Shoot(enemy.Value);
             StartMove(fleePoint);
             return;
         }
@@ -72,7 +76,7 @@ public class Lamina : Player
         {
             food = null;
         }
-        if (Energy < 5)
+        if (Energy < 1)
         {
             StopMove();
             isloading = true;
@@ -85,9 +89,9 @@ public class Lamina : Player
                 isloading = false;
             else return;
         }
-        if (food == null && EnergyRegeneration < 6)
+        if (food == null && EnergyRegeneration < 5)
             InfraRedSensor(3.5f * i++);
-        else if (food != null && EnergyRegeneration < 6)
+        else if (food != null && EnergyRegeneration < 5)
         {
             float dx = food.Value.X - this.Location.X,
                   dy = food.Value.Y - this.Location.Y;
@@ -110,9 +114,9 @@ public class Lamina : Player
             enemy = null;
         }
 
-        if (enemy == null && EnergyRegeneration > 6)
+        if (enemy == null && EnergyRegeneration >= 5)
             InfraRedSensor(5f * i++);
-        else if (enemy != null && EnergyRegeneration > 6)
+        else if (enemy != null && EnergyRegeneration >= 5)
         {
             InfraRedSensor(enemy.Value);
             float dx = enemy.Value.X - this.Location.X,
@@ -121,6 +125,7 @@ public class Lamina : Player
             {
                 StopTurbo();
                 StartMove(enemy.Value);
+                Shoot(enemy.Value);   
             }
             else
             {

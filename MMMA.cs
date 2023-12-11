@@ -19,15 +19,31 @@ public class MMMA : Player
     int countSonar = 0;
 
     int countLaser = 0;
+    int countShoot = 0;
 
+    float angle = 0;
+    float deltaAngle = 0.05f;
     protected override void loop()
     {
+        // if (Location.X != 22 && Location.Y != 22)
+        // {
+        //     StartTurbo();
+        //     StartMove(new PointF(22,22));
+        //     return;
+        // }
+        // StopMove();
+        countShoot++;
+        // PointF ps = new(12f * countShoot);
+        if (Energy > 10)
+            Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
+        angle += deltaAngle;
+        // if (angle > MathF.PI / 2)
+        //     deltaAngle = -deltaAngle;
+        // if (angle < 0)
+        //     deltaAngle = -deltaAngle;
 
+        return;
 
-        countLaser ++;
-
-        if (Life < 80)
-            flee = true;
 
         // if (EnergyRegeneration < 5)
         // {
@@ -99,19 +115,23 @@ public class MMMA : Player
             // return;
         // }
 
-
+        
+        countLaser ++;
 
         if (LastDamage is not null && Life < 70)
         {
             flee = true;
-            if (LastDamage.Value.X > Location.X)
-                fleePoint.X = LastDamage.Value.X - 25;
-            else
-                fleePoint.X = LastDamage.Value.X + 25;
-            if (LastDamage.Value.Y > Location.Y)
-                fleePoint.Y = LastDamage.Value.Y - 10;
-            else
-                fleePoint.Y = LastDamage.Value.Y + 10;
+            // if (LastDamage.Value.X > Location.X)
+            //     fleePoint.X = LastDamage.Value.X - 45;
+            // else
+            //     fleePoint.X = LastDamage.Value.X + 45;
+            // if (LastDamage.Value.Y > Location.Y)
+            //     fleePoint.Y = LastDamage.Value.Y - 20;
+            // else
+            //     fleePoint.Y = LastDamage.Value.Y + 20;
+
+
+            
             fleeTime = 0;
         }
 
@@ -171,7 +191,7 @@ public class MMMA : Player
             else return;
         }
 
-        if (enemy == null && Energy > 10 && countLaser > 10){
+        if (enemy == null && Energy > 10 && countLaser > 5){
             countLaser = 0;
             InfraRedSensor(25f * i++);
         }
@@ -189,8 +209,6 @@ public class MMMA : Player
                 // StartMove(enemy.Value);
                 Shoot(enemy.Value);   
             }
-
-
             else
             {
                 StopMove();
