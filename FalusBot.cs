@@ -24,9 +24,7 @@ public class FalusBot : Player
         else
         {
             enemy = EnemiesInInfraRed[0];
-            if (i++ % 5 == 0)
-                InfraRedSensor(5f * i++); 
-            else
+            while(enemy.HasValue)
                 Shoot(enemy.Value);
         }
         
