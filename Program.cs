@@ -50,7 +50,7 @@ form.Load += delegate
             continue;
         
         var isTest = pl.GetCustomAttribute<TestAttribute>() is not null;
-        if (mode == "test" && !isTest)
+        if (mode == "game" && isTest)
             continue;
         
         var constructors = pl.GetConstructors();
