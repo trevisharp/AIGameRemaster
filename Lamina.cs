@@ -56,7 +56,7 @@ public class Lamina : Player
             }
             if(Energy > 20)
             {
-                flee = false;
+                // flee = false;
                 StartTurbo();
             }
             else
