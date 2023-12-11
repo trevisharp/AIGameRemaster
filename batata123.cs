@@ -10,11 +10,11 @@ public class BatataPlayer : Player
     PointF? enemyBatata = null;
     bool isloadingBatata = false;
 
-    PointF ponto = new(0, 0);
+    PointF ponto = new(25, 25);
+    PointF ponto2 = new(250, 250);
+    PointF ponto3 = new(600, 1100);
 
-    int searchindex = 0;
-    int frame = 0;
-    int points = 0;
+    DateTime tempoInfravermelho = DateTime.Now;
 
     protected override void loop()
     {      
@@ -26,35 +26,6 @@ public class BatataPlayer : Player
         {
             enemyBatata = null;
         }
-
-        frame++;
-        if (Energy < 10 || frame % 10 == 0)
-            return;
-        if (EntitiesInStrongSonar == 0)
-        {
-            StrongSonar();
-            points = Points;
-        }
-        else if (EntitiesInAccurateSonar.Count == 0)
-        {
-            AccurateSonar();
-        }
-        else if (FoodsInInfraRed.Count == 0)
-        {
-            InfraRedSensor(EntitiesInAccurateSonar[searchindex++ % EntitiesInAccurateSonar.Count]);
-        }
-        else
-        {
-            StartMove(FoodsInInfraRed[0]);
-            if (Points != points)
-            {
-                StartTurbo();
-                StrongSonar();
-                StopMove();
-                ResetInfraRed();
-                ResetSonar();
-            }
-        }
         
         if (Energy < 10)
         {
@@ -62,25 +33,53 @@ public class BatataPlayer : Player
             isloadingBatata = true;
             enemyBatata = null;
         }
+
+        if(Location == ponto2)
+        {
+            StopMove();
+            ponto = ponto3;
+        }
+
+        if(Location == ponto3)
+        {
+            StopMove();
+            ponto = ponto2;
+        }
+
+        if(Life < 90)
+        {
+            StartTurbo();
+            StartMove(ponto);   
+        }
+
+        if(Life > 90)
+        {
+            StopTurbo();   
+            StopMove();   
+        }
+
         if (isloadingBatata)
         {
-            if (Energy > 60)
+            if (Energy > 50)
                 isloadingBatata = false;
             else return;
         }
-        if (enemyBatata == null && Energy > 10)
-            InfraRedSensor(11f * i++);
+        if (enemyBatata == null && Energy > 20)
+        {
+            InfraRedSensor(6f * i++);
+        }
         else if (enemyBatata != null && Energy > 10)
         {
             InfraRedSensor(enemyBatata.Value);
             float dx = enemyBatata.Value.X - this.Location.X,
                   dy = enemyBatata.Value.Y - this.Location.Y;
-            if (dx*dx + dy*dy <= 300f*300f)
+            if (dx*dx + dy*dy >= 800f*800f)
             {
-                // StartMove(enemyBatata.Value);
-            
-                StartTurbo();
-                if (i++ % 4 == 0)
+                ResetInfraRed();
+            }
+            else
+            {
+                if (i++ % 5 == 0)
                 {
                     Shoot(enemyBatata.Value);
                 }
