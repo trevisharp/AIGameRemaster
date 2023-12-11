@@ -4,7 +4,7 @@ using System.Drawing;
 public class BatataPlayer : Player
 {
     public BatataPlayer(PointF location) : 
-        base(location, Color.Red, Color.Purple, "Batata") { }
+        base(location, Color.Black, Color.Red, "Batata") { }
 
     int i = 0;
     PointF? enemyBatata = null;
