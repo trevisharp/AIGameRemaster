@@ -26,7 +26,7 @@ public class Lamina : Player
         frame++;
         StartTurbo();
 
-        if(Life < 70)
+        if(Life < 40)
         {
             flee = true;
             if (LastDamage.Value.X > Location.X)
