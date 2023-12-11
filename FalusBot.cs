@@ -19,6 +19,7 @@ public class FalusBot : Player
 
     protected override void loop()
     {
+        getPoint();
         if (LastDamage != lastBomb)
         {
             lastBomb = LastDamage;
@@ -27,11 +28,11 @@ public class FalusBot : Player
             float runY = lastBomb.Value.Y - this.Location.Y;
 
             StartTurbo();
-            StartMove(new SizeF(runX, -runY));
+            StartMove(new SizeF(-runX * 5, -runY * 5));
             isRunning = true;
         }
 
-        if(lastBomb.HasValue && getDistance(lastBomb.Value) > 20)
+        if (lastBomb.HasValue && getDistance(lastBomb.Value) > 20)
         {
             StopTurbo();
             StopMove();
@@ -41,7 +42,6 @@ public class FalusBot : Player
         if (isRunning)
             return;
 
-        getPoint();
         if (accurateSearch)
         {
             AccurateSonar();
@@ -60,6 +60,14 @@ public class FalusBot : Player
                     foreach (PointF ponto in EntitiesInAccurateSonar)
                     {
                         float distance = getDistance(ponto);
+                        InfraRedSensor(ponto);
+                        PointF? enemy = EnemiesInInfraRed.Count > 0 ? EnemiesInInfraRed[0] : null;
+                        if (enemy.HasValue)
+                        {
+                            Shoot(enemy.Value);
+                            accurateSearch = true;
+                            infraRedSearch = true;
+                        }
 
                         if (distance < shortestDistance)
                         {
@@ -81,7 +89,7 @@ public class FalusBot : Player
                     infraRedSearch = true;
                     return;
                 }
-                    
+
                 if (isEnemy(InfraRedEnemy, InfraRedFood))
                 {
                     Shoot(InfraRedEnemy.Value);
