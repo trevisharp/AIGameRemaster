@@ -1,4 +1,4 @@
-        // Screen.PrimaryScreen.Bounds.Width;
+// Screen.PrimaryScreen.Bounds.Width;
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Drawing;
@@ -18,6 +18,9 @@ public class FeldPlayer : Player
     PointF go4 = new PointF(1250, 30);
     PointF? currentPosition = new PointF();
     int count = 0;
+    int i = 0;
+    int j = 0;
+    PointF? enemy = null;
     double? lastlife = null;
 
     private float distance(PointF? pointA, PointF? pointB)
@@ -36,38 +39,133 @@ public class FeldPlayer : Player
 
         if (lastlife != null && lastlife > Life)
         {
-            Shoot(LastDamage.Value);
             count++;
         }
-        if (count == 2)
+        if (count == 1)
         {
             count = 0;
             position++;
         }
 
         if (position == 1)
-            StartMove(go4);
+        {
+            StartTurbo();
+            StartMove(go2);
+        }
 
         if (distance(go4, currentPosition) <= 25)
-            {StopMove();}
+        {
+            StopMove();
+            StopTurbo();
+            if (EnemiesInInfraRed.Count > 0)
+            {
+                enemy = EnemiesInInfraRed[0];
+            }
+            else
+            {
+                enemy = null;
+            }
+            if (enemy == null && Energy > 10)
+                InfraRedSensor(5f * i++);
+            if (Energy > 50)
+            {
+                if (enemy is not null)
+                {
+                    Shoot(enemy.Value);
+                    enemy = null;
+                }
+            }
+        }
 
         if (position == 2)
+        {
+            StartTurbo();
             StartMove(p: go3);
+        }
 
         if (distance(go3, currentPosition) <= 25)
+        {
+            StopTurbo();
             StopMove();
+            if (EnemiesInInfraRed.Count > 0)
+            {
+                enemy = EnemiesInInfraRed[0];
+            }
+            else
+            {
+                enemy = null;
+            }
+            if (enemy == null && Energy > 10)
+                InfraRedSensor(5f * i++);
+            if (Energy > 50)
+            {
+                if (enemy is not null)
+                {
+                    Shoot(enemy.Value);
+                    enemy = null;
+                }
+            }
+        }
 
         if (position == 3)
-            StartMove(go2);
+        {
+            StartTurbo();
+            StartMove(go4);
+        }
 
         if (distance(go2, currentPosition) <= 25)
+        {
             StopMove();
+            StopTurbo();
+            if (EnemiesInInfraRed.Count > 0)
+            {
+                enemy = EnemiesInInfraRed[0];
+            }
+            else
+            {
+                enemy = null;
+            }
+            if (enemy == null && Energy > 10)
+                InfraRedSensor(5f * i++);
+            if (Energy > 50)
+            {
+                if (enemy is not null)
+                {
+                    Shoot(enemy.Value);
+                    enemy = null;
+                }
+            }
+        }
 
         if (position == 4)
+        {
+            StartTurbo();
             StartMove(go1);
+        }
 
         if (distance(go1, currentPosition) <= 25)
+        {
+            StopTurbo();
             StopMove();
+            if (EnemiesInInfraRed.Count > 0)
+            {
+                enemy = EnemiesInInfraRed[0];
+            }
+            else
+            {
+                enemy = null;
+            }
+            if (enemy == null && Energy > 10)
+                InfraRedSensor(5f * i++);
+            if (Energy > 50)
+            {
+                if (enemy is not null)
+                {
+                    Shoot(enemy.Value);
+                    enemy = null;
+                }
+            }
+        }
 
         if (position == 5)
             position = 0;
