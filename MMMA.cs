@@ -11,58 +11,64 @@ public class MMMA : Player
     int i = 0;
     PointF? enemy = null;
     PointF? food = null;
-    PointF? closest = null;
+    PointF closest;
     bool isloading = false;
-    PointF fleePoint = new(0, 0);
+    PointF fleePoint = new(0500, 500);
     bool flee = false;
     int fleeTime = 0;
     int countSonar = 0;
 
+    int countLaser = 0;
+
     protected override void loop()
     {
+
+
+        countLaser ++;
+
         if (Life < 80)
             flee = true;
 
-        if (EnergyRegeneration < 5)
-        {
-            countSonar++;
-            if (countSonar > 50)
-            {
-                countSonar = 0;
-                AccurateSonar();
-            }
+        // if (EnergyRegeneration < 5)
+        // {
+        //     countSonar++;
+        //     if (countSonar > 50 && Energy > 20)
+        //     {
+        //         countSonar = 0;
+        //         AccurateSonar();
+        //     }
 
-            if(EntitiesInAccurateSonar.Count > 0)
-            {
-                closest = EntitiesInAccurateSonar[0];
+        //     if(EntitiesInAccurateSonar.Count > 0)
+        //     {
+        //         closest = EntitiesInAccurateSonar[0];
 
-                foreach (var item in EntitiesInAccurateSonar)
-                {
-                    float dxi = item.X - this.Location.X,
-                            dyi = item.Y - this.Location.Y;
-                    float di = dxi * dxi + dyi * dyi;
+        //         foreach (var item in EntitiesInAccurateSonar)
+        //         {
+        //             float dxi = item.X - this.Location.X,
+        //                     dyi = item.Y - this.Location.Y;
+        //             float di = dxi * dxi + dyi * dyi;
 
-                    float dxc = closest.Value.X - this.Location.X,
-                            dyc = closest.Value.Y - this.Location.Y;
-                    float dc = dxc * dxc + dyc * dyc;
+        //             float dxc = closest.X - this.Location.X,
+        //                     dyc = closest.Y - this.Location.Y;
+        //             float dc = dxc * dxc + dyc * dyc;
 
-                    if(di < dc)
-                        closest = item;
-                }
-            }
-            // if(closest is not null)
-            //     InfraRedSensor(closest);
-            // food = closest;
+        //             if(di < dc)
+        //                 closest = item;
+        //         }
+        //     }
 
-            // if (FoodsInInfraRed.Count > 0)
-            // {
-            //     food = FoodsInInfraRed[0];
-            // }
+             
+        //     food = closest;
 
-            // else
-            // {
-            //     food = null;
-            // }
+        //     // if (FoodsInInfraRed.Count > 0)
+        //     // {
+        //     //     food = FoodsInInfraRed[0];
+        //     // }
+
+        //     // else
+        //     // {
+        //     //     food = null;
+        //     // }
 
             // if (Energy < 5)
             // {
@@ -78,20 +84,20 @@ public class MMMA : Player
             //     else return;
             // }
 
-            if (food == null && Energy > 5)
-                InfraRedSensor(5f * i++);
+            // if (food == null && Energy > 5)
+            //     InfraRedSensor(5f * i++);
 
-            else if (food != null && Energy > 5)
-            {
-                InfraRedSensor(food.Value);
+            // else if (food != null && Energy > 5)
+            // {
+            //     InfraRedSensor(food.Value);
 
-                float dx = food.Value.X - this.Location.X,
-                      dy = food.Value.Y - this.Location.Y;
-                if (dx * dx + dy * dy >= 10f * 10f)
-                    StartMove(FoodsInInfraRed[0]);
-            }
-            return;
-        }
+            //     float dx = food.Value.X - this.Location.X,
+            //           dy = food.Value.Y - this.Location.Y;
+            //     if (dx * dx + dy * dy >= 10f * 10f)
+            //         StartMove(closest);
+            // }
+            // return;
+        // }
 
 
 
@@ -99,17 +105,17 @@ public class MMMA : Player
         {
             flee = true;
             if (LastDamage.Value.X > Location.X)
-                fleePoint.X = LastDamage.Value.X + 50;
+                fleePoint.X = LastDamage.Value.X - 25;
             else
-                fleePoint.X = LastDamage.Value.X - 50;
+                fleePoint.X = LastDamage.Value.X + 25;
             if (LastDamage.Value.Y > Location.Y)
-                fleePoint.Y = LastDamage.Value.Y - 100;
+                fleePoint.Y = LastDamage.Value.Y - 10;
             else
-                fleePoint.Y = LastDamage.Value.Y + 100;
+                fleePoint.Y = LastDamage.Value.Y + 10;
             fleeTime = 0;
         }
 
-        if (fleeTime > 10)
+        if (fleeTime > 5)
         {
             flee = false;
             fleeTime = 0;
@@ -160,22 +166,30 @@ public class MMMA : Player
 
         if (isloading)
         {
-            if (Energy > 60)
+            if (Energy > 30)
                 isloading = false;
             else return;
         }
 
-        if (enemy == null && Energy > 10)
-            InfraRedSensor(5f * i++);
+        if (enemy == null && Energy > 10 && countLaser > 10){
+            countLaser = 0;
+            InfraRedSensor(25f * i++);
+        }
 
         else if (enemy != null && Energy > 10)
         {
-            InfraRedSensor(enemy.Value);
+            if (countLaser > 5)
+                InfraRedSensor(enemy.Value);
+                
             float dx = enemy.Value.X - this.Location.X,
                   dy = enemy.Value.Y - this.Location.Y;
 
             if (dx * dx + dy * dy >= 300f * 300f)
-                StartMove(enemy.Value);
+            {       
+                // StartMove(enemy.Value);
+                Shoot(enemy.Value);   
+            }
+
 
             else
             {
