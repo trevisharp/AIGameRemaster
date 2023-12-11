@@ -55,7 +55,10 @@ public class Lamina : Player
                 return;
             }
             if(Energy > 20)
+            {
+                flee = false;
                 StartTurbo();
+            }
             else
                 StopTurbo();
             fleeTime++;
