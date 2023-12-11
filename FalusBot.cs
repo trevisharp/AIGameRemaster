@@ -4,14 +4,12 @@ using System.Drawing;
 public class FalusBot : Player
 {
     public FalusBot(PointF location) :
-        base(location, Color.Black, Color.Red, "Falus")
+        base(location, Color.Pink, Color.Red, "Falus")
     { random = new Random(); }
 
     Random random;
     bool accurateSearch = true;
     PointF? nextPoint = null;
-
-    bool infraRedSearch = true;
 
     PointF? lastBomb = null;
 
@@ -19,28 +17,34 @@ public class FalusBot : Player
 
     protected override void loop()
     {
+        if (Energy < 20)
+        {
+            return;
+        }
+
         getPoint();
         if (LastDamage != lastBomb)
         {
             lastBomb = LastDamage;
 
-            float runX = lastBomb.Value.X - this.Location.X;
-            float runY = lastBomb.Value.Y - this.Location.Y;
-
-            StartTurbo();
-            StartMove(new SizeF(-runX * 5, -runY * 5));
             isRunning = true;
         }
 
-        if (lastBomb.HasValue && getDistance(lastBomb.Value) > 20)
+        if (lastBomb.HasValue && getDistance(lastBomb.Value) > 10)
         {
             StopTurbo();
             StopMove();
             isRunning = false;
         }
 
-        if (isRunning)
+        if (isRunning){
+            float runX = lastBomb.Value.X - this.Location.X;
+            float runY = lastBomb.Value.Y - this.Location.Y;
+
+            StartTurbo();
+            StartMove(new SizeF(runX, -runY));
             return;
+        }
 
         if (accurateSearch)
         {
@@ -53,32 +57,29 @@ public class FalusBot : Player
             {
                 StopMove();
 
-                if (infraRedSearch)
+                PointF objetivo = PointF.Empty;
+                float shortestDistance = float.MaxValue;
+                foreach (PointF ponto in EntitiesInAccurateSonar)
                 {
-                    PointF objetivo = PointF.Empty;
-                    float shortestDistance = float.MaxValue;
-                    foreach (PointF ponto in EntitiesInAccurateSonar)
+                    if (LastDamage != lastBomb)
+                        return;
+                    float distance = getDistance(ponto);
+                    InfraRedSensor(ponto);
+                    PointF? enemy = EnemiesInInfraRed.Count > 0 ? EnemiesInInfraRed[0] : null;
+                    if (enemy.HasValue)
                     {
-                        float distance = getDistance(ponto);
-                        InfraRedSensor(ponto);
-                        PointF? enemy = EnemiesInInfraRed.Count > 0 ? EnemiesInInfraRed[0] : null;
-                        if (enemy.HasValue)
-                        {
-                            Shoot(enemy.Value);
-                            accurateSearch = true;
-                            infraRedSearch = true;
-                        }
-
-                        if (distance < shortestDistance)
-                        {
-                            shortestDistance = distance;
-                            objetivo = ponto;
-                        }
+                        Shoot(enemy.Value);
+                        accurateSearch = true;
                     }
 
-                    InfraRedSensor(objetivo);
-                    infraRedSearch = false;
+                    if (distance < shortestDistance)
+                    {
+                        shortestDistance = distance;
+                        objetivo = ponto;
+                    }
                 }
+
+                InfraRedSensor(objetivo);
 
                 PointF? InfraRedEnemy = EnemiesInInfraRed.Count > 0 ? EnemiesInInfraRed[0] : null;
                 PointF? InfraRedFood = FoodsInInfraRed.Count > 0 ? FoodsInInfraRed[0] : null;
@@ -86,7 +87,6 @@ public class FalusBot : Player
                 if (!InfraRedEnemy.HasValue && !InfraRedFood.HasValue)
                 {
                     accurateSearch = true;
-                    infraRedSearch = true;
                     return;
                 }
 
@@ -94,10 +94,14 @@ public class FalusBot : Player
                 {
                     Shoot(InfraRedEnemy.Value);
                     accurateSearch = true;
-                    infraRedSearch = true;
                 }
                 else
                 {
+                    if (LastDamage != lastBomb)
+                    {
+                        isRunning = true;
+                        return;
+                    }
                     StartTurbo();
                     StartMove(InfraRedFood.Value);
 
@@ -106,7 +110,6 @@ public class FalusBot : Player
                         StopTurbo();
                         StopMove();
                         accurateSearch = true;
-                        infraRedSearch = true;
                     }
                 }
             }

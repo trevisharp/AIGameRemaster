@@ -22,16 +22,39 @@ public class MMMA : Player
     int countShoot = 0;
 
     float angle = 0;
-    float deltaAngle = 0.05f;
+    float deltaAngle = 0.017f;
+
+    
     protected override void loop()
     {
-        // if (Location.X != 22 && Location.Y != 22)
+        // if (EnergyRegeneration < 5)
         // {
-        //     StartTurbo();
-        //     StartMove(new PointF(22,22));
-        //     return;
-        // }
-        // StopMove();
+        //     countSonar++;
+        //     if (countSonar > 50 && Energy > 20)
+        //     {
+        //         countSonar = 0;
+        //         AccurateSonar();
+        //     }
+
+        //     if(EntitiesInAccurateSonar.Count > 0)
+        //     {
+        //         closest = EntitiesInAccurateSonar[0];
+
+        //         foreach (var item in EntitiesInAccurateSonar)
+        //         {
+        //             float dxi = item.X - this.Location.X,
+        //                     dyi = item.Y - this.Location.Y;
+        //             float di = dxi * dxi + dyi * dyi;
+
+        //             float dxc = closest.X - this.Location.X,
+        //                     dyc = closest.Y - this.Location.Y;
+        //             float dc = dxc * dxc + dyc * dyc;
+
+        //             if(di < dc)
+        //                 closest = item;
+        //         }
+        //     }
+
         countShoot++;
         // PointF ps = new(12f * countShoot);
         if (Energy > 10)
