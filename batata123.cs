@@ -75,7 +75,7 @@ public class BatataPlayer : Player
             InfraRedSensor(enemyBatata.Value);
             float dx = enemyBatata.Value.X - this.Location.X,
                   dy = enemyBatata.Value.Y - this.Location.Y;
-            if (dx*dx + dy*dy <= 600f*600f)
+            if (dx*dx + dy*dy <= 300f*300f)
             {
                 // StartMove(enemyBatata.Value);
             
