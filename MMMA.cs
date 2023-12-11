@@ -189,8 +189,6 @@ public class MMMA : Player
                 // StartMove(enemy.Value);
                 Shoot(enemy.Value);   
             }
-
-
             else
             {
                 StopMove();
