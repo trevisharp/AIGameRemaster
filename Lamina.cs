@@ -107,9 +107,9 @@ public class Lamina : Player
             else return;
         }
 
-        if (food == null && EnergyRegeneration < 8.5)
+        if (food == null && EnergyRegeneration < 7)
             InfraRedSensor(3.5f * i++);
-        else if (food != null && EnergyRegeneration < 8.5)
+        else if (food != null && EnergyRegeneration < 7)
         {
             float dx = food.Value.X - this.Location.X,
                   dy = food.Value.Y - this.Location.Y;
@@ -130,9 +130,9 @@ public class Lamina : Player
             enemy = null;
         }
 
-        if (enemy == null && EnergyRegeneration >= 8.5)
+        if (enemy == null && EnergyRegeneration >= 7)
             InfraRedSensor(5f * i++);
-        else if (enemy != null && EnergyRegeneration >= 8.5)
+        else if (enemy != null && EnergyRegeneration >= 7)
         {
             if (frame % 12 == 0)
                 InfraRedSensor(enemy.Value);
