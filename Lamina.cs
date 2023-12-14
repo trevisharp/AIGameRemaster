@@ -19,41 +19,58 @@ public class Lamina : Player
     bool flee = false;
     long fleeTime = 0;
     int lifeTh = 80;
-    PointF fleePoint = new PointF(0,0);
+    PointF fleePoint = new PointF(0, 0);
 
     protected override void loop()
     {
         frame++;
         StartTurbo();
 
-        if(Life < 40)
+        if (this.Location.X < 0)
+        {
+            StartMove(new PointF(300, 600));
+        }
+        else if (this.Location.X > 1250)
+        {
+            StartMove(new PointF(300, 600));
+        }
+        else if (this.Location.Y < 0)
+        {
+            StartMove(new PointF(300, 600));
+        }
+        else if (this.Location.Y > 770)
+        {
+            StartMove(new PointF(300, 600));
+        }
+
+        if (Life < 20 && fleeTime < 3)
         {
             flee = true;
             if (LastDamage.Value.X > Location.X)
                 fleePoint.X = LastDamage.Value.X - 600;
-            else 
+            else
                 fleePoint.X = LastDamage.Value.X + 600;
             if (LastDamage.Value.Y > Location.Y)
                 fleePoint.Y = LastDamage.Value.Y - 400;
-            else 
+            else
                 fleePoint.Y = LastDamage.Value.Y + 400;
             fleeTime = 0;
         }
 
-        if(fleeTime >= 3)
+        if (fleeTime >= 3)
         {
             flee = false;
             fleeTime = 0;
         }
 
-        if(flee)
+        if (flee)
         {
-            if(Energy < 10)
+            if (Energy < 10)
             {
                 StopMove();
                 return;
             }
-            if(Energy > 20)
+            if (Energy > 20)
             {
                 StartTurbo();
             }
@@ -61,7 +78,8 @@ public class Lamina : Player
                 StopTurbo();
             fleeTime++;
             enemy = LastDamage;
-            Shoot(enemy.Value);
+            if (frame % 7 == 0)
+                Shoot(enemy.Value);
             StartMove(fleePoint);
             return;
         }
@@ -74,6 +92,7 @@ public class Lamina : Player
         {
             food = null;
         }
+
         if (Energy < 10)
         {
             StopMove();
@@ -87,20 +106,19 @@ public class Lamina : Player
                 isloading = false;
             else return;
         }
-        if (food == null && EnergyRegeneration < 7)
+
+        if (food == null && EnergyRegeneration < 8.5)
             InfraRedSensor(3.5f * i++);
-        else if (food != null && EnergyRegeneration < 7)
+        else if (food != null && EnergyRegeneration < 8.5)
         {
             float dx = food.Value.X - this.Location.X,
                   dy = food.Value.Y - this.Location.Y;
             if (dx * dx + dy * dy <= 5f * 5f)
                 foodcount++;
             // MessageBox.Show(foodcount.ToString());
-            if (frame % 10 == 0)
+            if (frame % 20 == 0)
                 InfraRedSensor(food.Value);
             StartMove(FoodsInInfraRed[0]);
-
-
         }
 
         if (EnemiesInInfraRed.Count > 0)
@@ -112,29 +130,39 @@ public class Lamina : Player
             enemy = null;
         }
 
-        if (enemy == null && EnergyRegeneration >= 7)
+        if (enemy == null && EnergyRegeneration >= 8.5)
             InfraRedSensor(5f * i++);
-        else if (enemy != null && EnergyRegeneration >= 7)
+        else if (enemy != null && EnergyRegeneration >= 8.5)
         {
-            InfraRedSensor(enemy.Value);
+            if (frame % 12 == 0)
+                InfraRedSensor(enemy.Value);
             float dx = enemy.Value.X - this.Location.X,
                 dy = enemy.Value.Y - this.Location.Y;
             if (dx * dx + dy * dy >= 280f * 280f)
             {
                 StopTurbo();
                 StartMove(enemy.Value);
-                Shoot(enemy.Value);   
+                Shoot(pointPrevision(enemy.Value));
             }
             else
             {
                 StopMove();
                 if (i++ % 5 == 0)
-                    Shoot(enemy.Value);
+                    Shoot(pointPrevision(enemy.Value));
             }
         }
-
-
-
-
     }
+
+    private PointF pointPrevision(PointF enemyPosition)
+    {
+
+        float distanceX = this.Location.X - enemyPosition.X;
+        float distanceY = this.Location.Y - enemyPosition.Y;
+
+        float estimatedDistanceX = distanceX + (float)(this.Velocity.Width * Math.Cos(Math.Atan2(distanceY, distanceX)));
+        float estimatedDistanceY = distanceY + (float)(this.Velocity.Width * Math.Sin(Math.Atan2(distanceY, distanceX)));
+
+        return new Point((int)(enemyPosition.X + estimatedDistanceX), (int)(enemyPosition.Y + estimatedDistanceY));
+    }
+
 }
