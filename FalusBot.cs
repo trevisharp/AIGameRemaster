@@ -19,7 +19,7 @@ public class FalusBot : Player
 
     int i = 0;
     float angle = 0;
-    float deltaAngleEstrelinha = 1.057f;
+    float deltaAngleEstrelinha = 0.557f;
     float deltaAngle = 0.057f;
     PointF pointI = new PointF(0, 0);
     PointF pointF = new PointF(1250, 0);
@@ -60,30 +60,30 @@ public class FalusBot : Player
         }
 
         // FALUS TSUNAMI
-        // if (points >= 20)
-        // {
-        //     StopTurbo();
-        //     if (startTsunami == false)
-        //     {
-        //         StartMove(pointI);
+        if (points >= 20)
+        {
+            StopTurbo();
+            if (startTsunami == false)
+            {
+                StartMove(pointI);
 
-        //         if (getDistance(pointI) < 10)
-        //         {
-        //             startTsunami = true;
-        //         }
-        //     }
-        //     else
-        //     {
-        //         StartMove(pointF);
+                if (getDistance(pointI) < 10)
+                {
+                    startTsunami = true;
+                }
+            }
+            else
+            {
+                StartMove(pointF);
 
-        //         if (getDistance(pointF) < 10)
-        //         {
-        //             startTsunami = false;
-        //         }
-        //     }
-        //     Shoot(new PointF(this.Location.X, this.Location.Y + 1));
-        //     return;
-        // }
+                if (getDistance(pointF) < 10)
+                {
+                    startTsunami = false;
+                }
+            }
+            Shoot(new PointF(this.Location.X, this.Location.Y + 1));
+            return;
+        }
 
         // FALUS CAÇADOR
         // if (points >= 20)
@@ -99,19 +99,19 @@ public class FalusBot : Player
         // }
 
         // FALUS ESTRELINHA
-        if (points >= 20)
-        {
-            if (LastDamage != lastBomb)
-            {
-                isRunning = true;
-                runningForLife();
-                return;
-            }
+        // if (points >= 20)
+        // {
+        //     if (LastDamage != lastBomb)
+        //     {
+        //         isRunning = true;
+        //         runningForLife();
+        //         return;
+        //     }
 
-            Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
-            angle += deltaAngleEstrelinha;
-            return;
-        }
+        //     Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
+        //     angle += deltaAngleEstrelinha;
+        //     return;
+        // }
 
         if (accurateSearch)
         {
