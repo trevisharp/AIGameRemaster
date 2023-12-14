@@ -15,12 +15,19 @@ public class FalusBot : Player
 
     bool isRunning = false;
 
+    int points = 0;
+
+    float angle = 0;
+    float deltaAngle = 0.057f;
+
     protected override void loop()
     {
-        if (Energy < 20)
+        if (Energy <= 20)
         {
+            StopTurbo();
             return;
         }
+
 
         getPoint();
         if (LastDamage != lastBomb)
@@ -28,21 +35,36 @@ public class FalusBot : Player
             lastBomb = LastDamage;
 
             isRunning = true;
+            runningForLife();
         }
 
         if (lastBomb.HasValue && getDistance(lastBomb.Value) > 10)
         {
-            StopTurbo();
             StopMove();
             isRunning = false;
         }
 
-        if (isRunning){
+        if (isRunning)
+        {
             float runX = lastBomb.Value.X - this.Location.X;
             float runY = lastBomb.Value.Y - this.Location.Y;
 
             StartTurbo();
             StartMove(new SizeF(runX, -runY));
+            return;
+        }
+
+        if (points >= 20)
+        {
+            if (LastDamage != lastBomb)
+            {
+                isRunning = true;
+                runningForLife();
+                return;
+            }
+
+            Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
+            angle += deltaAngle;
             return;
         }
 
@@ -62,7 +84,7 @@ public class FalusBot : Player
                 foreach (PointF ponto in EntitiesInAccurateSonar)
                 {
                     if (LastDamage != lastBomb)
-                        return;
+                        runningForLife();
                     float distance = getDistance(ponto);
                     InfraRedSensor(ponto);
                     PointF? enemy = EnemiesInInfraRed.Count > 0 ? EnemiesInInfraRed[0] : null;
@@ -92,22 +114,33 @@ public class FalusBot : Player
 
                 if (isEnemy(InfraRedEnemy, InfraRedFood))
                 {
-                    Shoot(InfraRedEnemy.Value);
-                    accurateSearch = true;
-                }
-                else
-                {
                     if (LastDamage != lastBomb)
                     {
                         isRunning = true;
+                        runningForLife();
                         return;
                     }
+
+                    Shoot(InfraRedEnemy.Value);
+                    accurateSearch = true;
+
+                    OppositePoint(InfraRedEnemy.Value.X * 5, InfraRedEnemy.Value.Y * 5);
+                }
+                else
+                {
                     StartTurbo();
                     StartMove(InfraRedFood.Value);
 
                     if (getDistance(InfraRedFood.Value) <= 10)
                     {
-                        StopTurbo();
+                        points++;
+                        if (LastDamage != lastBomb)
+                        {
+                            isRunning = true;
+                            runningForLife();
+                            return;
+                        }
+
                         StopMove();
                         accurateSearch = true;
                     }
@@ -121,15 +154,34 @@ public class FalusBot : Player
         }
     }
 
+
+    private void runningForLife()
+    {
+        float runX = lastBomb.Value.X - this.Location.X;
+        float runY = lastBomb.Value.Y - this.Location.Y;
+
+        OppositePoint(runX * 10, runY * 10);
+    }
+
+    private void OppositePoint(float x, float y)
+    {
+        SizeF direction = new SizeF(
+            (float)Math.Cos(x * (2 * Math.PI) / 360f),
+            (float)Math.Sin(-y * (2 * Math.PI) / 360f)
+        );
+
+        nextPoint = this.Location + direction;
+    }
+
     private void getPoint()
     {
         double x = random.NextDouble();
         double y = random.NextDouble();
 
-        float dx = (float)((nextPoint.HasValue ? nextPoint.Value.X : this.Location.X) - this.Location.X),
-              dy = (float)((nextPoint.HasValue ? nextPoint.Value.Y : this.Location.Y) - this.Location.Y);
+        float distance = getDistance(new PointF(nextPoint.HasValue ? nextPoint.Value.X : this.Location.X,
+                                        nextPoint.HasValue ? nextPoint.Value.Y : this.Location.Y));
 
-        if (dx * dx + dy * dy <= 300f * 300f || nextPoint == null)
+        if (distance <= 10 || nextPoint == null || this.Location.X <= 0 || this.Location.Y <= 0)
             nextPoint = new PointF((float)(x * 720), (float)(y * 1200));
     }
 
