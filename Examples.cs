@@ -11,6 +11,9 @@ public class TreviPlayer : Player
     PointF? enemy = null;
     bool isloading = false;
 
+
+    
+
     protected override void loop()
     {
         StartTurbo();
