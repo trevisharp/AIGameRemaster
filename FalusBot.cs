@@ -19,6 +19,7 @@ public class FalusBot : Player
 
     int i = 0;
     float angle = 0;
+    float deltaAngleEstrelinha = 1.057f;
     float deltaAngle = 0.057f;
     PointF pointI = new PointF(0, 0);
     PointF pointF = new PointF(1250, 0);
@@ -108,7 +109,7 @@ public class FalusBot : Player
             }
 
             Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
-            angle += deltaAngle;
+            angle += deltaAngleEstrelinha;
             return;
         }
 
