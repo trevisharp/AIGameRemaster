@@ -17,8 +17,8 @@ public class FalusBot : Player
 
     int points = 0;
 
-    float angle = 0;
-    float deltaAngle = 1.057f;
+    int i = 0;
+    float deltaAngle = 0.057f;
 
     protected override void loop()
     {
@@ -56,17 +56,29 @@ public class FalusBot : Player
 
         if (points >= 20)
         {
-            if (LastDamage != lastBomb)
-            {
-                isRunning = true;
-                runningForLife();
-                return;
-            }
+            InfraRedSensor(5f * i++);
 
-            Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
-            angle += deltaAngle;
+            if(EnemiesInInfraRed.Count > 0)
+            {
+                InfraRedSensor(EnemiesInInfraRed[0]);
+                Shoot(EnemiesInInfraRed[0]);
+            }
             return;
         }
+
+        // if (points >= 20)
+        // {
+        //     if (LastDamage != lastBomb)
+        //     {
+        //         isRunning = true;
+        //         runningForLife();
+        //         return;
+        //     }
+
+        //     Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
+        //     angle += deltaAngle;
+        //     return;
+        // }
 
         if (accurateSearch)
         {
