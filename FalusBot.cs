@@ -18,7 +18,7 @@ public class FalusBot : Player
     int points = 0;
 
     float angle = 0;
-    float deltaAngle = 0.057f;
+    float deltaAngle = 1.057f;
 
     protected override void loop()
     {
