@@ -18,7 +18,11 @@ public class FalusBot : Player
     int points = 0;
 
     int i = 0;
+    float angle = 0;
     float deltaAngle = 0.057f;
+    PointF pointI = new PointF(0, 0);
+    PointF pointF = new PointF(1250, 0);
+    bool startTsunami = false;
 
     protected override void loop()
     {
@@ -54,31 +58,59 @@ public class FalusBot : Player
             return;
         }
 
-        if (points >= 20)
-        {
-            InfraRedSensor(5f * i++);
-
-            if(EnemiesInInfraRed.Count > 0)
-            {
-                InfraRedSensor(EnemiesInInfraRed[0]);
-                Shoot(EnemiesInInfraRed[0]);
-            }
-            return;
-        }
-
+        // FALUS TSUNAMI
         // if (points >= 20)
         // {
-        //     if (LastDamage != lastBomb)
+        //     StopTurbo();
+        //     if (startTsunami == false)
         //     {
-        //         isRunning = true;
-        //         runningForLife();
-        //         return;
-        //     }
+        //         StartMove(pointI);
 
-        //     Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
-        //     angle += deltaAngle;
+        //         if (getDistance(pointI) < 10)
+        //         {
+        //             startTsunami = true;
+        //         }
+        //     }
+        //     else
+        //     {
+        //         StartMove(pointF);
+
+        //         if (getDistance(pointF) < 10)
+        //         {
+        //             startTsunami = false;
+        //         }
+        //     }
+        //     Shoot(new PointF(this.Location.X, this.Location.Y + 1));
         //     return;
         // }
+
+        // FALUS CAÇADOR
+        // if (points >= 20)
+        // {
+        //     InfraRedSensor(8f * i++);
+
+        //     if(EnemiesInInfraRed.Count > 0)
+        //     {
+        //         InfraRedSensor(EnemiesInInfraRed[0]);
+        //         Shoot(EnemiesInInfraRed[0]);
+        //     }
+        //     return;
+        // }
+
+        // FALUS ESTRELINHA
+        if (points >= 20)
+        {
+            if (LastDamage != lastBomb)
+            {
+                isRunning = true;
+                runningForLife();
+                return;
+            }
+
+            Shoot(new SizeF(MathF.Cos(angle), MathF.Sin(angle)));
+            angle += deltaAngle;
+            return;
+        }
 
         if (accurateSearch)
         {
@@ -93,6 +125,7 @@ public class FalusBot : Player
 
                 PointF objetivo = PointF.Empty;
                 float shortestDistance = float.MaxValue;
+                int equal = 0;
                 foreach (PointF ponto in EntitiesInAccurateSonar)
                 {
                     if (LastDamage != lastBomb)
@@ -106,6 +139,12 @@ public class FalusBot : Player
                         accurateSearch = true;
                     }
 
+                    if (distance == shortestDistance)
+                    {
+                        equal++;
+                        objetivo = EntitiesInAccurateSonar[0];
+                        break;
+                    }
                     if (distance < shortestDistance)
                     {
                         shortestDistance = distance;
